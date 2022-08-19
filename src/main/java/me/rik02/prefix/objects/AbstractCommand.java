@@ -32,7 +32,7 @@ public abstract class AbstractCommand extends Command {
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (sender instanceof Player) player = (Player) sender;
         if (!subCommands.isEmpty()) {
-            if (getExecutedSubcommand(args).equalsIgnoreCase("")) {
+            if (!(getExecutedSubcommand(args).equalsIgnoreCase(""))) {
                 if (hasPermission(player, permission + "." + getExecutedSubcommand(args))) {
                     try {
                         Method method = getClass().getMethod(getExecutedSubcommand(args), CommandSender.class, String.class, String[].class);
