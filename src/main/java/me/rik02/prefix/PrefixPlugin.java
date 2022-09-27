@@ -9,6 +9,7 @@ public final class PrefixPlugin extends JavaPlugin {
     private final ModuleManager<PrefixPlugin> moduleManager = new ModuleManager<>();
     private static PrefixPlugin instance;
 
+    // Methods
     @Override
     public void onLoad() {
         instance = this;

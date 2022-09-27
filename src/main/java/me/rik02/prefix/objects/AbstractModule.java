@@ -7,6 +7,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,14 +23,25 @@ public abstract class AbstractModule<P extends Plugin> {
     private final AtomicBoolean enabled;
     private final List<Listener> listeners;
     private final List<Command> commands;
+    private final CommandMap commandMap;
 
     // Constructor
     public AbstractModule(P plugin) {
+        CommandMap tempCommandMap = null;
         this.plugin = plugin;
         name = getClass().getSimpleName();
         enabled = new AtomicBoolean();
         listeners = new LinkedList<>();
         commands = new LinkedList<>();
+
+        try {
+            final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            bukkitCommandMap.setAccessible(true);
+            tempCommandMap = (CommandMap) bukkitCommandMap.get(plugin.getServer());
+        } catch (NoSuchFieldException | IllegalAccessException exception) {
+            Bukkit.shutdown();
+        }
+        commandMap = tempCommandMap;
     }
 
     // Methods
@@ -68,7 +80,7 @@ public abstract class AbstractModule<P extends Plugin> {
         new Log("Disabling " + name + ", removing " + components + "(+) components...");
         listeners.forEach(HandlerList::unregisterAll);
         listeners.clear();
-        commands.forEach((command) -> command.unregister(plugin.getServer().getCommandMap()));
+        commands.forEach((command) -> command.unregister(commandMap));
         commands.clear();
         onDisable();
     }
@@ -94,7 +106,6 @@ public abstract class AbstractModule<P extends Plugin> {
 
         Object object = requireNonNull(requireNonNull(supplier, "Supplier should not be null.").get(), "Supplied command should not be null.");
         AbstractCommand abstractCommand = (AbstractCommand) object;
-        CommandMap commandMap = plugin.getServer().getCommandMap();
         commandMap.register(abstractCommand.getName(), abstractCommand);
         commands.add(abstractCommand);
     }

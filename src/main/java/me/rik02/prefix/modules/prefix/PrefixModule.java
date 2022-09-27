@@ -1,30 +1,40 @@
 package me.rik02.prefix.modules.prefix;
 
-import lombok.Getter;
 import me.rik02.prefix.PrefixPlugin;
+import me.rik02.prefix.modules.prefix.commands.PrefixCommand;
+import me.rik02.prefix.modules.prefix.events.PlayerChat;
+import me.rik02.prefix.modules.prefix.events.PlayerJoin;
+import me.rik02.prefix.modules.prefix.events.PlayerQuit;
+import me.rik02.prefix.modules.prefix.objects.Tablist;
 import me.rik02.prefix.objects.AbstractModule;
 import me.rik02.prefix.objects.File;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
-@Getter
 public class PrefixModule extends AbstractModule<PrefixPlugin> {
     // Properties
-    private final File groups;
-    private final File users;
+    public final File groups;
+    public final File players;
+    public final Tablist tablist;
 
     // Constructor
     public PrefixModule(PrefixPlugin plugin) {
         super(plugin);
         groups = new File("groups");
-        users = new File("users");
+        players = new File("players");
+        tablist = new Tablist(this);
     }
 
+    // Methods
     @Override
     protected void onEnable() {
+        command(() -> new PrefixCommand(this));
+        listen(() -> new PlayerChat(this));
+        listen(() -> new PlayerJoin(this));
+        listen(() -> new PlayerQuit(this));
 
-    }
-
-    @Override
-    protected void onDisable() {
-
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            tablist.update(player);
+        }
     }
 }

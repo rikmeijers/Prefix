@@ -49,7 +49,7 @@ public abstract class AbstractCommand extends Command {
         return true;
     }
 
-    protected void onCommand(CommandSender sender, String commandLabel, String[] args) {}
+    protected abstract void onCommand(CommandSender sender, String commandLabel, String[] args);
 
     public final boolean hasPermission(Player player, String permission) {
         if (player == null) return true;

@@ -2,3 +2,4 @@ name: Prefix
 version: '${project.version}'
 main: me.rik02.prefix.PrefixPlugin
 api-version: 1.13
+authors: [Vronsky, rik02]
