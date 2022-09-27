@@ -9,12 +9,6 @@ Install the Jetbrains IntellIJ IDE for the development.
 
 #### Building for source
 
-Using gradle:
-
-```sh
-gradle clean build
-```
-
 Using maven:
 
 ```sh
